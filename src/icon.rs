@@ -1,5 +1,3 @@
-use eframe::egui;
-
 pub fn app_icon() -> egui::IconData {
     let decoder = png::Decoder::new(std::io::Cursor::new(include_bytes!(
         "../assets/icon-256.png"

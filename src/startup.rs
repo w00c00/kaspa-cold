@@ -16,6 +16,7 @@ fn bounded_os_details(text: &str) -> String {
         .collect()
 }
 
+#[cfg(not(target_os = "windows"))]
 pub fn from_error(error: &eframe::Error, app_created: bool) -> Report {
     // No arbitrary app error or post-initialization error is formatted: these
     // may contain user data in future versions. Only platform startup failures
@@ -37,10 +38,27 @@ pub fn from_error(error: &eframe::Error, app_created: bool) -> Report {
     }
 }
 
+#[cfg(target_os = "windows")]
+pub fn from_error(error: &dyn std::error::Error, app_created: bool) -> Report {
+    if app_created {
+        return Report { code: "COLD-RUNTIME", details: "The application stopped after initialization. Details withheld to protect wallet data.\n程序初始化后停止；为保护钱包数据，不显示异常详情。".into() };
+    }
+    Report {
+        code: "COLD-SOFTWARE-WINDOW",
+        details: bounded_os_details(&error.to_string()),
+    }
+}
+
 pub fn message(report: &Report) -> String {
     format!(
-        "Kaspa Cold 0.1.0 — Windows startup diagnostic 1\n\nCode / 错误代码: {}\nRenderer / 渲染后端: OpenGL (Glow)\n\n{}\n\n请截图反馈此弹窗，勿包含任何助记词。\nPlease share this error dialog, never a mnemonic.\n\n本程序不记录日志、不上传诊断信息。\nNo logs are written and no diagnostics are transmitted.\n不要安装来历不明的 DLL，也不要全局关闭系统安全保护。\nDo not install unofficial DLLs or disable system security.",
-        report.code, report.details
+        "Kaspa Cold 0.1.0\n\nCode / 错误代码: {}\nRenderer / 渲染后端: {}\n\n{}\n\n请截图反馈此弹窗，勿包含任何助记词。\nPlease share this error dialog, never a mnemonic.\n\n本程序不记录日志、不上传诊断信息。\nNo logs are written and no diagnostics are transmitted.\n不要安装来历不明的 DLL，也不要全局关闭系统安全保护。\nDo not install unofficial DLLs or disable system security.",
+        report.code,
+        if cfg!(target_os = "windows") {
+            "CPU software / Windows system window"
+        } else {
+            "OpenGL (Glow)"
+        },
+        report.details
     )
 }
 
@@ -73,6 +91,7 @@ pub fn self_test_report() -> Report {
 mod tests {
     use super::*;
     #[test]
+    #[cfg(not(target_os = "windows"))]
     fn app_errors_never_disclose_payload() {
         let error =
             eframe::Error::AppCreation(Box::new(std::io::Error::other("SECRET_PAYLOAD_SENTINEL")));

@@ -1,7 +1,7 @@
 #![cfg_attr(target_os = "windows", windows_subsystem = "windows")]
 mod icon;
 mod startup;
-use eframe::egui::{self, Color32, RichText};
+use egui::{Color32, RichText};
 use kaspa_cold::{
     core::{self, Error, Network, OsEntropy, PublicWallet, SecretPhrase},
     qr,
@@ -39,8 +39,8 @@ struct App {
     discard: bool,
 }
 impl App {
-    fn new(cc: &eframe::CreationContext<'_>) -> Self {
-        cc.egui_ctx.set_theme(egui::Theme::Dark);
+    fn new(ctx: &egui::Context) -> Self {
+        ctx.set_theme(egui::Theme::Dark);
         let mut fonts = egui::FontDefinitions::default();
         fonts.font_data.insert(
             "cjk".into(),
@@ -51,24 +51,24 @@ impl App {
             .get_mut(&egui::FontFamily::Proportional)
             .unwrap()
             .push("cjk".into());
-        cc.egui_ctx.set_fonts(fonts);
+        ctx.set_fonts(fonts);
         let mut visuals = egui::Visuals::dark();
         visuals.panel_fill = Color32::from_rgb(15, 24, 29);
         visuals.window_fill = Color32::from_rgb(21, 33, 39);
         visuals.selection.bg_fill = Color32::from_rgb(38, 105, 100);
-        cc.egui_ctx.set_visuals(visuals);
-        let mut style = (*cc.egui_ctx.style()).clone();
+        ctx.set_visuals(visuals);
+        let mut style = (*ctx.style()).clone();
         style.spacing.item_spacing = egui::vec2(12., 12.);
         style.spacing.button_padding = egui::vec2(16., 10.);
         style
             .text_styles
             .insert(egui::TextStyle::Body, egui::FontId::proportional(17.));
-        cc.egui_ctx.set_style(style);
+        ctx.set_style(style);
         let mut app = Self::empty(
             sys_locale::get_locale().is_some_and(|s| s.to_lowercase().starts_with("zh")),
         );
         let icon = icon::app_icon();
-        app.icon_texture = Some(cc.egui_ctx.load_texture(
+        app.icon_texture = Some(ctx.load_texture(
             "app-brand",
             egui::ColorImage::from_rgba_unmultiplied(
                 [icon.width as usize, icon.height as usize],
@@ -476,8 +476,8 @@ impl App {
         }
     }
 }
-impl eframe::App for App {
-    fn update(&mut self, ctx: &egui::Context, _: &mut eframe::Frame) {
+impl App {
+    fn render_ui(&mut self, ctx: &egui::Context) {
         if !ctx.input(|i| i.focused) {
             self.visible = false;
         }
@@ -488,7 +488,7 @@ impl eframe::App for App {
                 }
                 ui.label(RichText::new("KASPA COLD").color(TEAL).size(24.).strong());
                 ui.label(if cfg!(target_os = "windows") {
-                    "0.1.0 · DIAG 1 · OFFLINE"
+                    "0.1.0 · CPU · OFFLINE"
                 } else {
                     "0.1.0 · OFFLINE"
                 });
@@ -564,7 +564,9 @@ impl eframe::App for App {
             });
         }
     }
-    fn on_exit(&mut self, _: Option<&eframe::glow::Context>) {
+}
+impl Drop for App {
+    fn drop(&mut self) {
         self.secret = None;
         self.restore_text.zeroize();
         for answer in &mut self.answers {
@@ -572,6 +574,22 @@ impl eframe::App for App {
         }
     }
 }
+#[cfg(not(target_os = "windows"))]
+impl eframe::App for App {
+    fn update(&mut self, ctx: &egui::Context, _: &mut eframe::Frame) {
+        self.render_ui(ctx);
+    }
+}
+#[cfg(target_os = "windows")]
+impl egui_software_backend::App for App {
+    fn update(&mut self, ctx: &egui::Context, _: &mut egui_software_backend::SoftwareBackend) {
+        self.render_ui(ctx);
+    }
+    fn on_exit(&mut self, ctx: &egui::Context) {
+        self.clear_secrets(ctx);
+    }
+}
+#[cfg(not(target_os = "windows"))]
 fn run() -> eframe::Result {
     let options = eframe::NativeOptions {
         renderer: eframe::Renderer::Glow,
@@ -586,11 +604,30 @@ fn run() -> eframe::Result {
         "Kaspa Cold",
         options,
         Box::new(|cc| {
-            let app = App::new(cc);
+            let app = App::new(&cc.egui_ctx);
             startup::APP_CREATED.store(true, std::sync::atomic::Ordering::SeqCst);
             Ok(Box::new(app))
         }),
     )
+}
+
+#[cfg(target_os = "windows")]
+fn run() -> Result<(), Box<dyn std::error::Error>> {
+    let mut options = egui_software_backend::SoftwareBackendAppConfiguration::new()
+        // Do not retain rasterized secret text in the backend's tile cache.
+        .caching(false);
+    options.viewport_builder = egui::ViewportBuilder::default()
+        .with_title("Kaspa Cold")
+        .with_app_id("org.kaspa.cold")
+        .with_icon(icon::app_icon())
+        .with_inner_size([850., 720.])
+        .with_min_inner_size([700., 620.]);
+    egui_software_backend::run_app_with_software_backend(options, |ctx| {
+        let app = App::new(&ctx);
+        startup::APP_CREATED.store(true, std::sync::atomic::Ordering::SeqCst);
+        app
+    })
+    .map_err(|error| Box::new(error) as Box<dyn std::error::Error>)
 }
 
 fn main() -> std::process::ExitCode {
@@ -602,8 +639,12 @@ fn main() -> std::process::ExitCode {
     match run() {
         Ok(()) => std::process::ExitCode::SUCCESS,
         Err(error) => {
+            #[cfg(target_os = "windows")]
+            let error = error.as_ref();
+            #[cfg(not(target_os = "windows"))]
+            let error = &error;
             let report = startup::from_error(
-                &error,
+                error,
                 startup::APP_CREATED.load(std::sync::atomic::Ordering::SeqCst),
             );
             startup::show(&report);
@@ -616,6 +657,103 @@ fn main() -> std::process::ExitCode {
 mod tests {
     use super::*;
     const VECTOR: &str = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about";
+    #[test]
+    fn cpu_renderer_draws_both_languages_and_all_pages_without_gpu() {
+        use egui_software_backend::{BufferMutRef, ColorFieldOrder, EguiSoftwareRender};
+        for zh in [true, false] {
+            for page in [
+                Page::Home,
+                Page::Safety,
+                Page::Phrase,
+                Page::Confirm,
+                Page::Restore,
+                Page::Receive,
+            ] {
+                let ctx = egui::Context::default();
+                let mut app = App::new(&ctx);
+                app.zh = zh;
+                app.page = page;
+                app.secret = Some(core::restore(VECTOR).unwrap());
+                app.visible = true;
+                if page == Page::Receive {
+                    app.public = Some(app.secret.as_ref().unwrap().public_wallet().unwrap());
+                    app.clear_secrets(&ctx);
+                    app.refresh_address(&ctx);
+                }
+                let mut renderer =
+                    EguiSoftwareRender::new(ColorFieldOrder::Bgra).with_caching(false);
+                let mut pixels = vec![[0u8; 4]; 850 * 720];
+                for _ in 0..2 {
+                    let output = ctx.run(
+                        egui::RawInput {
+                            screen_rect: Some(egui::Rect::from_min_size(
+                                egui::Pos2::ZERO,
+                                egui::vec2(850., 720.),
+                            )),
+                            focused: true,
+                            ..Default::default()
+                        },
+                        |ctx| app.render_ui(ctx),
+                    );
+                    let primitives = ctx.tessellate(output.shapes, output.pixels_per_point);
+                    pixels.fill([0; 4]);
+                    renderer.render(
+                        &mut BufferMutRef::new(&mut pixels, 850, 720),
+                        &primitives,
+                        &output.textures_delta,
+                        output.pixels_per_point,
+                    );
+                }
+                assert!(
+                    pixels
+                        .iter()
+                        .filter(|p| p[0] > 100 || p[1] > 100 || p[2] > 100)
+                        .count()
+                        > 1000
+                );
+                // Optional QA image contains only the public BIP39 test-vector
+                // address, never a generated wallet or a secret-bearing page.
+                if zh
+                    && page == Page::Receive
+                    && let Some(path) = std::env::var_os("KASPA_COLD_PUBLIC_CPU_QA_PNG")
+                {
+                    let file = std::fs::File::create(path).unwrap();
+                    let mut encoder = png::Encoder::new(file, 850, 720);
+                    encoder.set_color(png::ColorType::Rgb);
+                    encoder.set_depth(png::BitDepth::Eight);
+                    let rgb: Vec<u8> = pixels.iter().flat_map(|p| [p[2], p[1], p[0]]).collect();
+                    encoder
+                        .write_header()
+                        .unwrap()
+                        .write_image_data(&rgb)
+                        .unwrap();
+                }
+            }
+        }
+    }
+    #[test]
+    fn focus_loss_hides_phrase_and_secret_screens_block_clipboard() {
+        let ctx = egui::Context::default();
+        let mut app = App::new(&ctx);
+        app.page = Page::Phrase;
+        app.secret = Some(core::restore(VECTOR).unwrap());
+        app.visible = true;
+        let output = ctx.run(
+            egui::RawInput {
+                focused: false,
+                ..Default::default()
+            },
+            |ctx| {
+                ctx.copy_text("SECRET_PAYLOAD_SENTINEL".into());
+                app.render_ui(ctx);
+            },
+        );
+        assert!(!app.visible);
+        assert!(!output.platform_output.commands.iter().any(|c| matches!(
+            c,
+            egui::OutputCommand::CopyText(_) | egui::OutputCommand::CopyImage(_)
+        )));
+    }
     #[test]
     fn defaults_and_secret_discard() {
         let ctx = egui::Context::default();

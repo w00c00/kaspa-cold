@@ -6,7 +6,7 @@ license = "MIT"
 description = "Offline Kaspa mnemonic and address generator"
 
 [dependencies]
-eframe = { version = "=0.33.3", default-features = false, features = ["glow", "default_fonts", "x11", "wayland"] }
+egui = { version = "=0.33.3", default-features = false, features = ["default_fonts"] }
 kaspa-wallet-keys = "=2.1.0"
 kaspa-bip32 = "=2.1.0"
 kaspa-addresses = "=2.1.0"
@@ -16,6 +16,16 @@ qrcode = { version = "=0.14.1", default-features = false }
 png = "=0.17.16"
 rfd = { version = "=0.16.0", default-features = false, features = ["xdg-portal", "async-std"] }
 sys-locale = "=0.3.2"
+
+[target.'cfg(not(target_os = "windows"))'.dependencies]
+eframe = { version = "=0.33.3", default-features = false, features = ["glow", "default_fonts", "x11", "wayland"] }
+
+[target.'cfg(target_os = "windows")'.dependencies]
+egui_software_backend = { version = "=0.0.2", default-features = false, features = ["std", "winit"] }
+egui-winit = { version = "=0.33.3", default-features = false, features = ["clipboard"] }
+
+[dev-dependencies]
+egui_software_backend = { version = "=0.0.2", default-features = false, features = ["std"] }
 
 [profile.release]
 opt-level = "s"

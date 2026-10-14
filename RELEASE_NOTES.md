@@ -1,6 +1,14 @@
 # Kaspa Cold v0.1.0 — Offline generator / 离线钱包生成器
 
-## Additional Windows diagnostic / 新增 Windows 诊断包
+## Windows portable CPU compatibility build / Windows 精简 CPU 兼容版
+
+Use the additional asset containing `windows-portable-cpu1` if the original EXE fails with unsupported OpenGL. It uses CPU software rendering + Windows system GDI, with no OpenGL driver requirement, Electron, WebView, Node.js or extra MinGW runtime DLL. Extract and run the EXE. Offline generation/recovery, bilingual UI, QR and backup flow remain unchanged. 18 automated tests passed, including CPU rendering in both languages/all pages and focus/clipboard protection. **Windows real-device launch and operations still need verification.** Original v0.1.0 tag/assets remain unchanged; source commit recorded in `BUILD_COMMIT.txt`.
+
+原版 OpenGL 不受支持时请下载新增的 `windows-portable-cpu1` 包。CPU 绘制、系统 GDI 显示，解压即用，不需要额外图形运行库。完全离线、双语、备份和地址规则不变。18 项自动测试通过，**仍待 Windows 实机验证**，原版标签与文件保留不覆盖。
+
+CPU package / CPU 包：EXE **4.74 MiB**, ZIP approximately **4.61 MiB** including target-specific licenses and bilingual documentation. No executable packing / 不加壳。
+
+## Historical Windows diagnostic / 旧 Windows 诊断包
 
 If the original Windows EXE silently exits, download the extra asset whose name contains `windows-startup-diag1`. It adds native startup error dialogs and `--diagnostic-self-test` (no wallet generated). It writes no logs and transmits no diagnostics. App error/panic payloads and post-initialization details are withheld. **This is a diagnostic build, not a confirmed fix**, and still needs Windows real-device testing. Its source commit is recorded inside `BUILD_COMMIT.txt`; the original v0.1.0 tag and downloads remain unchanged.
 

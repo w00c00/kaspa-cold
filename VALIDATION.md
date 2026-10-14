@@ -50,7 +50,7 @@ These are inherited dependencies; this application's source does not call the un
 - Native/macOS build: macOS Apple Silicon host, Apple clang/Xcode SDK.
 - Windows GNU/Linux cross-linker: Zig 0.14.1 via cargo-zigbuild 0.23.4.
 - Cryptographic primitives: official kaspa-wallet-keys/kaspa-bip32/kaspa-addresses 2.1.0, pinned in Cargo.lock.
-- UI: egui/eframe 0.33.3, Glow renderer, no Electron/WebView/Node runtime.
+- UI: egui 0.33.3; macOS/Linux eframe/Glow; new Windows variant egui_software_backend 0.0.2 + softbuffer 0.4.8 (CPU + GDI). No Electron/WebView/Node runtime.
 - Chinese font: bundled Noto CJK subset, approximately 127 KiB, SIL OFL 1.1.
 - macOS packages: ad-hoc signed only, not Apple Developer signed/notarized. Windows: unsigned.
 
@@ -64,3 +64,16 @@ This is a testing delivery, not a claim of audited or mainnet-ready custody secu
 - Current diagnostic source: **16 automated tests passed**, including three diagnostic payload/privacy/length tests; clippy passed with warnings denied.
 - `--diagnostic-self-test` exercised on the Mac host's text fallback and returns success without creating a wallet. This does **not** verify the Windows MessageBox at runtime.
 - Windows x64 cross-build passed. Native Windows testing and the user's actual startup error remain outstanding; this diagnostic build is **not a confirmed startup fix**.
+
+## Windows portable CPU 1 / Windows CPU 兼容版 1
+
+- User screenshot confirmed `COLD-GL-PAINTER`: OpenGL 2.0+ unavailable on a physical Windows 11 machine.
+- Windows renderer replaced with CPU rasterization + softbuffer GDI. Official key derivation/address encoding unchanged; macOS/Linux retain their original renderer.
+- **18 automated tests passed**: original 16 plus actual CPU rasterization in both languages/all six pages, and focus-loss/secret-screen clipboard suppression. Clippy with warnings denied passed on the host.
+- Rasterized tile caching disabled to avoid retaining secret glyph pixels there; app buffers cleaned best-effort on drop. System framebuffer, swap and screenshots are outside the guarantee.
+- Windows x64 cross-build passed. Native Windows runtime remains unverified; cross-build/host CPU tests are not Windows runtime verification.
+- PE imports verified: only system Windows/UCRT DLLs; GDI `CreateDIBSection`/`BitBlt` present, no OpenGL/Direct3D/MinGW DLL import. Icon resources verified.
+- CPU-rendered public receive-screen QR independently decoded with OpenCV and matched the published BIP39 zero-entropy vector's address. No generated secret was captured.
+- EXE **4,967,424 bytes (4.74 MiB)**; portable ZIP including public documentation/licenses approximately **4.61 MiB**. Target-specific license inventory avoids shipping unrelated platform dependencies; no executable packer/UPX used.
+- `cargo audit` re-run: exit 0 with the same **10 informational warnings** listed above, not an independent security audit.
+- Windows-target `cargo clippy --all-targets -- -D warnings` also passed using Zig CC and LLVM AR. Initial plain cross-Clippy attempts failed on missing MinGW CC and a misconfigured archiver, not application diagnostics; corrected tooling passed.

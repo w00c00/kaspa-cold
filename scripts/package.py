@@ -13,7 +13,7 @@ import zipfile
 ROOT = Path(__file__).resolve().parents[1]
 parser = argparse.ArgumentParser()
 parser.add_argument("--target", default="aarch64-apple-darwin")
-parser.add_argument("--variant", choices=("windows-startup-diag1",))
+parser.add_argument("--variant", choices=("windows-startup-diag1", "windows-portable-cpu1"))
 args = parser.parse_args()
 target = args.target
 if target not in ("aarch64-apple-darwin", "x86_64-apple-darwin", "x86_64-pc-windows-gnu", "x86_64-pc-windows-msvc", "x86_64-unknown-linux-gnu"):
@@ -34,9 +34,13 @@ folder.mkdir(parents=True, exist_ok=True)
 for document in ("README.md", "LICENSE", "VALIDATION.md", "Cargo.lock", "rust-toolchain.toml", "WINDOWS_DIAGNOSTICS.md"):
     if (ROOT / document).exists(): shutil.copy2(ROOT / document, folder / document)
 licenses = folder / "licenses"
+if args.variant == "windows-portable-cpu1" and licenses.exists():
+    # This generated variant's inventory is target-specific; avoid leaving
+    # obsolete licenses from earlier staging passes in the same output folder.
+    shutil.rmtree(licenses)
 licenses.mkdir(exist_ok=True)
 shutil.copy2(ROOT / "assets/FONT-LICENSE.txt", licenses / "Noto-CJK-OFL.txt")
-metadata = json.loads(subprocess.check_output(["cargo", "metadata", "--locked", "--offline", "--format-version=1"], cwd=ROOT))
+metadata = json.loads(subprocess.check_output(["cargo", "metadata", "--locked", "--offline", "--filter-platform", target, "--format-version=1"], cwd=ROOT))
 inventory = []
 for package in metadata["packages"]:
     inventory.append({"name": package["name"], "version": package["version"], "license": package["license"], "source": package["source"]})
