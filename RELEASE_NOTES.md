@@ -1,5 +1,11 @@
 # Kaspa Cold v0.1.0 — Offline generator / 离线钱包生成器
 
+## Additional Windows diagnostic / 新增 Windows 诊断包
+
+If the original Windows EXE silently exits, download the extra asset whose name contains `windows-startup-diag1`. It adds native startup error dialogs and `--diagnostic-self-test` (no wallet generated). It writes no logs and transmits no diagnostics. App error/panic payloads and post-initialization details are withheld. **This is a diagnostic build, not a confirmed fix**, and still needs Windows real-device testing. Its source commit is recorded inside `BUILD_COMMIT.txt`; the original v0.1.0 tag and downloads remain unchanged.
+
+如果原版 Windows EXE 双击无反应，请下载名称含 `windows-startup-diag1` 的额外诊断包。启动失败会尝试显示原生错误弹窗；`--diagnostic-self-test` 可主动测试弹窗，不生成钱包。不记录日志、不上传诊断数据，不显示应用异常／panic 载荷及初始化后的详情。**这是诊断版，不代表已修复故障**；仍待 Windows 实机验证。源码提交记录在包内 `BUILD_COMMIT.txt`，原版标签和下载保留不变。
+
 ## English
 
 A small native Kaspa mnemonic and receiving-address generator built with Rust and egui. No Electron, WebView or Node.js runtime. This is a **pre-release test build**.

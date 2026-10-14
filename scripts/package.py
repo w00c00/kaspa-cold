@@ -13,6 +13,7 @@ import zipfile
 ROOT = Path(__file__).resolve().parents[1]
 parser = argparse.ArgumentParser()
 parser.add_argument("--target", default="aarch64-apple-darwin")
+parser.add_argument("--variant", choices=("windows-startup-diag1",))
 args = parser.parse_args()
 target = args.target
 if target not in ("aarch64-apple-darwin", "x86_64-apple-darwin", "x86_64-pc-windows-gnu", "x86_64-pc-windows-msvc", "x86_64-unknown-linux-gnu"):
@@ -24,10 +25,13 @@ if not binary.exists() and target == "aarch64-apple-darwin":
 if not binary.exists():
     raise SystemExit(f"Build first: {binary}")
 name = f"Kaspa-Cold-0.1.0-{target}"
+if args.variant:
+    if "windows" not in target: raise SystemExit("The diagnostic variant is Windows-only")
+    name = f"Kaspa-Cold-0.1.0-{args.variant}-{target}"
 dist = ROOT / "dist"
 folder = dist / name
 folder.mkdir(parents=True, exist_ok=True)
-for document in ("README.md", "LICENSE", "VALIDATION.md", "Cargo.lock", "rust-toolchain.toml"):
+for document in ("README.md", "LICENSE", "VALIDATION.md", "Cargo.lock", "rust-toolchain.toml", "WINDOWS_DIAGNOSTICS.md"):
     if (ROOT / document).exists(): shutil.copy2(ROOT / document, folder / document)
 licenses = folder / "licenses"
 licenses.mkdir(exist_ok=True)
@@ -41,6 +45,9 @@ for package in metadata["packages"]:
     for p in candidates:
         shutil.copy2(p, licenses / f'{package["name"]}-{package["version"]}-{p.name}')
 (licenses / "inventory.json").write_text(json.dumps(inventory, indent=2), encoding="utf-8")
+if args.variant:
+    commit=subprocess.check_output(["git","rev-parse","HEAD"],cwd=ROOT,text=True).strip()
+    (folder / "BUILD_COMMIT.txt").write_text(f"Source commit: {commit}\nVariant: {args.variant}\nWindows runtime UI is not yet verified on a real Windows device.\n",encoding="utf-8")
 if "apple" in target:
     contents = folder / "Kaspa Cold.app/Contents"
     (contents / "MacOS").mkdir(parents=True, exist_ok=True)

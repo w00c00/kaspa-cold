@@ -11,6 +11,8 @@ Available for macOS Apple Silicon / Intel, Windows x64 and Linux x64. Portable a
 
 支持 macOS Apple Silicon／Intel、Windows x64 和 Linux x64。含图标及许可证的便携包约 5–6.3 MiB。当前为**预发布测试版**，不是经过独立审计的资产保管产品。
 
+**Windows silent startup failure? / Windows 双击没反应？** Try the additional [Windows startup diagnostic 1](https://github.com/w00c00/kaspa-cold/releases/download/v0.1.0/Kaspa-Cold-0.1.0-windows-startup-diag1-x86_64-pc-windows-gnu.zip). It adds native startup error dialogs, not a confirmed fix. Original packages remain available. See [instructions / 操作说明](WINDOWS_DIAGNOSTICS.md). The dialog self-test is `kaspa-cold.exe --diagnostic-self-test`; it generates no wallet and writes no log.
+
 ## 安全边界 / Security boundaries
 
 这是测试版软件，不是硬件钱包，不是已独立审计的产品。请使用干净、长期离线的专用设备；普通电脑临时断网并不能消除恶意软件风险。正式存钱前先验证恢复，再做小额收款和支出测试（支出需另用支持的签名钱包）。

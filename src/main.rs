@@ -1,5 +1,6 @@
 #![cfg_attr(target_os = "windows", windows_subsystem = "windows")]
 mod icon;
+mod startup;
 use eframe::egui::{self, Color32, RichText};
 use kaspa_cold::{
     core::{self, Error, Network, OsEntropy, PublicWallet, SecretPhrase},
@@ -486,7 +487,11 @@ impl eframe::App for App {
                     ui.add(egui::Image::new(icon).fit_to_exact_size(egui::vec2(36., 36.)));
                 }
                 ui.label(RichText::new("KASPA COLD").color(TEAL).size(24.).strong());
-                ui.label("0.1.0 · OFFLINE");
+                ui.label(if cfg!(target_os = "windows") {
+                    "0.1.0 · DIAG 1 · OFFLINE"
+                } else {
+                    "0.1.0 · OFFLINE"
+                });
                 ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
                     if ui
                         .button(if self.zh { "English" } else { "中文" })
@@ -567,10 +572,7 @@ impl eframe::App for App {
         }
     }
 }
-fn main() -> eframe::Result {
-    std::panic::set_hook(Box::new(|_| {
-        eprintln!("Kaspa Cold stopped unexpectedly. No diagnostic details were recorded.")
-    }));
+fn run() -> eframe::Result {
     let options = eframe::NativeOptions {
         renderer: eframe::Renderer::Glow,
         viewport: egui::ViewportBuilder::default()
@@ -583,8 +585,31 @@ fn main() -> eframe::Result {
     eframe::run_native(
         "Kaspa Cold",
         options,
-        Box::new(|cc| Ok(Box::new(App::new(cc)))),
+        Box::new(|cc| {
+            let app = App::new(cc);
+            startup::APP_CREATED.store(true, std::sync::atomic::Ordering::SeqCst);
+            Ok(Box::new(app))
+        }),
     )
+}
+
+fn main() -> std::process::ExitCode {
+    std::panic::set_hook(Box::new(|_| startup::show(&startup::panic_report())));
+    if std::env::args_os().any(|arg| arg == "--diagnostic-self-test") {
+        startup::show(&startup::self_test_report());
+        return std::process::ExitCode::SUCCESS;
+    }
+    match run() {
+        Ok(()) => std::process::ExitCode::SUCCESS,
+        Err(error) => {
+            let report = startup::from_error(
+                &error,
+                startup::APP_CREATED.load(std::sync::atomic::Ordering::SeqCst),
+            );
+            startup::show(&report);
+            std::process::ExitCode::FAILURE
+        }
+    }
 }
 
 #[cfg(test)]

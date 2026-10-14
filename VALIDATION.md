@@ -55,3 +55,12 @@ These are inherited dependencies; this application's source does not call the un
 - macOS packages: ad-hoc signed only, not Apple Developer signed/notarized. Windows: unsigned.
 
 This is a testing delivery, not a claim of audited or mainnet-ready custody security.
+
+## Windows startup diagnostic 1 / Windows 启动诊断版 1
+
+- Additional Windows-only archive; original published packages and v0.1.0 tag are preserved.
+- Native Windows MessageDialog reports recognized startup OS/driver errors without requiring OpenGL to draw the dialog.
+- Unknown application errors, all post-initialization errors and panic payloads are withheld; no log files, telemetry or automatic clipboard output added.
+- Current diagnostic source: **16 automated tests passed**, including three diagnostic payload/privacy/length tests; clippy passed with warnings denied.
+- `--diagnostic-self-test` exercised on the Mac host's text fallback and returns success without creating a wallet. This does **not** verify the Windows MessageBox at runtime.
+- Windows x64 cross-build passed. Native Windows testing and the user's actual startup error remain outstanding; this diagnostic build is **not a confirmed startup fix**.
