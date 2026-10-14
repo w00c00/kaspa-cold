@@ -1,10 +1,16 @@
 # Kaspa Cold v0.1.0 — Offline generator / 离线钱包生成器
 
+## v0.1.0 release / v0.1.0 正式发布
+
+The user confirmed the CPU build runs on physical Windows 11 on 2026-10-14 and approved publication. The reported unsupported-OpenGL startup failure is resolved on that machine. Download **windows-portable-cpu1** for Windows; older OpenGL builds are retained for provenance. Existing tag, archives and SHA256 values are unchanged; bundled validation documents record the earlier build-time status. This release is not independently security-audited; verify recovery and use only small test amounts first.
+
+用户于 2026-10-14 确认 CPU 版在 Windows 11 实体机可运行，授权正式发布。该机器上的 OpenGL 启动故障已解决。Windows 优先下载 **windows-portable-cpu1**；旧 OpenGL 包保留，标签、文件和校验值不变。包内文档记录的是构建时状态，后续实机确认见本说明。未完成独立安全审计，请先验证恢复，再小额测试。
+
 ## Windows portable CPU compatibility build / Windows 精简 CPU 兼容版
 
-Use the additional asset containing `windows-portable-cpu1` if the original EXE fails with unsupported OpenGL. It uses CPU software rendering + Windows system GDI, with no OpenGL driver requirement, Electron, WebView, Node.js or extra MinGW runtime DLL. Extract and run the EXE. Offline generation/recovery, bilingual UI, QR and backup flow remain unchanged. 18 automated tests passed, including CPU rendering in both languages/all pages and focus/clipboard protection. **Windows real-device launch and operations still need verification.** Original v0.1.0 tag/assets remain unchanged; source commit recorded in `BUILD_COMMIT.txt`.
+The recommended asset contains `windows-portable-cpu1`. It uses CPU software rendering + Windows system GDI, with no OpenGL driver requirement, Electron, WebView, Node.js or extra MinGW runtime DLL. Extract and run the EXE. Offline generation/recovery, bilingual UI, QR and backup flow remain unchanged. 18 automated tests passed, including CPU rendering in both languages/all pages and focus/clipboard protection. **User-confirmed running on physical Windows 11; full operation-by-operation validation remains pending.** Original v0.1.0 tag/assets remain unchanged; source commit recorded in `BUILD_COMMIT.txt`.
 
-原版 OpenGL 不受支持时请下载新增的 `windows-portable-cpu1` 包。CPU 绘制、系统 GDI 显示，解压即用，不需要额外图形运行库。完全离线、双语、备份和地址规则不变。18 项自动测试通过，**仍待 Windows 实机验证**，原版标签与文件保留不覆盖。
+请优先下载 `windows-portable-cpu1` 包。CPU 绘制、系统 GDI 显示，解压即用，不需要额外图形运行库。完全离线、双语、备份和地址规则不变。18 项自动测试通过，**用户已确认 Windows 11 实机可运行，逐项功能验证仍待完成**，原版标签与文件保留不覆盖。
 
 CPU package / CPU 包：EXE **4.74 MiB**, ZIP approximately **4.61 MiB** including target-specific licenses and bilingual documentation. No executable packing / 不加壳。
 
@@ -13,6 +19,10 @@ CPU package / CPU 包：EXE **4.74 MiB**, ZIP approximately **4.61 MiB** includi
 If the original Windows EXE silently exits, download the extra asset whose name contains `windows-startup-diag1`. It adds native startup error dialogs and `--diagnostic-self-test` (no wallet generated). It writes no logs and transmits no diagnostics. App error/panic payloads and post-initialization details are withheld. **This is a diagnostic build, not a confirmed fix**, and still needs Windows real-device testing. Its source commit is recorded inside `BUILD_COMMIT.txt`; the original v0.1.0 tag and downloads remain unchanged.
 
 如果原版 Windows EXE 双击无反应，请下载名称含 `windows-startup-diag1` 的额外诊断包。启动失败会尝试显示原生错误弹窗；`--diagnostic-self-test` 可主动测试弹窗，不生成钱包。不记录日志、不上传诊断数据，不显示应用异常／panic 载荷及初始化后的详情。**这是诊断版，不代表已修复故障**；仍待 Windows 实机验证。源码提交记录在包内 `BUILD_COMMIT.txt`，原版标签和下载保留不变。
+
+## Original build notes (historical) / 原版构建说明（历史记录）
+
+The following describes the original pre-release builds, not the subsequently verified Windows CPU build. / 以下记录原始预发布包，不代表后续实机确认的 Windows CPU 版状态。
 
 ## English
 

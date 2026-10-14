@@ -23,7 +23,7 @@ Date / 日期: 2026-10-14 (Asia/Shanghai). Release / 版本: 0.1.0 test build; a
 
 ## Still required / 尚待验证
 
-- Windows/Linux real-device smoke tests: launch, Chinese glyphs, address copying, saving QR/TXT, offline operation and native focus behavior. Compilation is **not** runtime verification.
+- Windows CPU build: launch/running confirmed by the user on physical Windows 11. Detailed operation-by-operation checks (clipboard, QR/TXT exports, focus, firewall-denied operation) and Windows 10 testing remain pending. Linux real-device smoke remains pending. Compilation is **not** runtime verification.
 - Physical Intel Mac GUI smoke. Translated core tests do not substitute for hardware testing.
 - Full end-to-end native generation/handwritten backup flow, clipboard checks and file-saving checks on each platform. Backup logic is unit-tested, but the native smoke intentionally did not capture a newly generated secret.
 - Full packet-trace/firewall-denied testing across all native actions. No network settings were changed on the user's machine.
@@ -71,9 +71,13 @@ This is a testing delivery, not a claim of audited or mainnet-ready custody secu
 - Windows renderer replaced with CPU rasterization + softbuffer GDI. Official key derivation/address encoding unchanged; macOS/Linux retain their original renderer.
 - **18 automated tests passed**: original 16 plus actual CPU rasterization in both languages/all six pages, and focus-loss/secret-screen clipboard suppression. Clippy with warnings denied passed on the host.
 - Rasterized tile caching disabled to avoid retaining secret glyph pixels there; app buffers cleaned best-effort on drop. System framebuffer, swap and screenshots are outside the guarantee.
-- Windows x64 cross-build passed. Native Windows runtime remains unverified; cross-build/host CPU tests are not Windows runtime verification.
+- Windows x64 cross-build passed. On 2026-10-14, the user confirmed the CPU build runs on the same physical Windows 11 machine that previously failed with unsupported OpenGL. This is user-reported runtime confirmation, not an independently observed full feature/security validation.
 - PE imports verified: only system Windows/UCRT DLLs; GDI `CreateDIBSection`/`BitBlt` present, no OpenGL/Direct3D/MinGW DLL import. Icon resources verified.
 - CPU-rendered public receive-screen QR independently decoded with OpenCV and matched the published BIP39 zero-entropy vector's address. No generated secret was captured.
 - EXE **4,967,424 bytes (4.74 MiB)**; portable ZIP including public documentation/licenses approximately **4.61 MiB**. Target-specific license inventory avoids shipping unrelated platform dependencies; no executable packer/UPX used.
 - `cargo audit` re-run: exit 0 with the same **10 informational warnings** listed above, not an independent security audit.
 - Windows-target `cargo clippy --all-targets -- -D warnings` also passed using Zig CC and LLVM AR. Initial plain cross-Clippy attempts failed on missing MinGW CC and a misconfigured archiver, not application diagnostics; corrected tooling passed.
+
+## Publication / 发布
+
+The user approved the v0.1.0 GitHub release after Windows 11 runtime confirmation. Existing binary assets, checksums and tag are preserved; their bundled validation files describe the earlier build-time status. This repository record and release notes contain the subsequent runtime confirmation. Formal publication is not an independent security audit. / 用户确认 Windows 11 可运行后授权正式发布。现有二进制、校验值和标签保留，包内验证说明仍记录构建时状态；后续实机确认以本记录和 Release 说明为准。正式发布不等于完成独立安全审计。

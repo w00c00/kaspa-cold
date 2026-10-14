@@ -7,13 +7,13 @@ A small native, offline-only Kaspa mnemonic and receiving-address generator.
 
 [Download test builds / 下载测试版](https://github.com/w00c00/kaspa-cold/releases) · [Validation / 验证记录](VALIDATION.md)
 
-Available for macOS Apple Silicon / Intel, Windows x64 and Linux x64. Portable archives are approximately 5–6.3 MiB, including the approved K-key artwork and licenses. These are **pre-release test builds**, not independently audited custody software.
+Available for macOS Apple Silicon / Intel, Windows x64 and Linux x64. Portable archives are approximately 4.6–6.3 MiB, including artwork and licenses. Version **0.1.0 is released**; it is not independently audited custody software.
 
-支持 macOS Apple Silicon／Intel、Windows x64 和 Linux x64。含图标及许可证的便携包约 5–6.3 MiB。当前为**预发布测试版**，不是经过独立审计的资产保管产品。
+支持 macOS Apple Silicon／Intel、Windows x64 和 Linux x64。含图标及许可证的便携包约 4.6–6.3 MiB。**0.1.0 已正式发布**，但不是经过独立审计的资产保管产品。
 
-**Windows portable CPU build / Windows 精简兼容版：** Use [windows-portable-cpu1](https://github.com/w00c00/kaspa-cold/releases/download/v0.1.0/Kaspa-Cold-0.1.0-windows-portable-cpu1-x86_64-pc-windows-gnu.zip) if the original build fails with `COLD-GL-PAINTER` or silently exits. It draws using the CPU and Windows GDI, with no OpenGL, Electron, WebView, Node.js or extra MinGW DLLs. Extract and run `kaspa-cold.exe`; the other files are documentation/licenses. Fully offline, with unchanged derivation and backup flow. **Windows real-device verification is still pending.** Original assets remain available. See [instructions / 操作说明](WINDOWS_DIAGNOSTICS.md).
+**Recommended Windows download / 推荐 Windows 下载：** [windows-portable-cpu1](https://github.com/w00c00/kaspa-cold/releases/download/v0.1.0/Kaspa-Cold-0.1.0-windows-portable-cpu1-x86_64-pc-windows-gnu.zip). It draws using the CPU and Windows GDI, with no OpenGL, Electron, WebView, Node.js or extra MinGW DLLs. Extract and run `kaspa-cold.exe`; the other files are documentation/licenses. Fully offline, with unchanged derivation and backup flow. **The user confirmed it runs on physical Windows 11 hardware on 2026-10-14**, resolving the reported OpenGL startup failure. This is not certification of every operation or Windows configuration. Original assets remain available. See [instructions / 操作说明](WINDOWS_DIAGNOSTICS.md).
 
-原版提示 OpenGL 不支持或双击无反应时，请使用上面的 CPU 兼容版。解压即可运行，无需额外安装图形运行库；仍是完全离线程序，助记词和地址规则不变。**尚待 Windows 实机确认，不能把交叉编译成功视为运行验证通过。**
+Windows 请优先使用上面的 CPU 兼容版。解压即可运行，无需额外安装图形运行库；仍是完全离线程序，助记词和地址规则不变。**用户于 2026-10-14 确认 Windows 11 实体机可运行，原 OpenGL 启动问题已解决**；不代表所有功能或 Windows 配置均已验证。
 
 Measured CPU build / CPU 版实测体积：EXE **4.74 MiB**; ZIP including documentation/licenses approximately **4.61 MiB**. No UPX or executable packing. / 未使用 UPX 或可执行文件加壳。
 
@@ -66,9 +66,9 @@ Build dependencies are fetched online on the build machine, never on the cold de
 - Windows: Rust MSVC toolchain + Visual Studio C++ build tools; GNU cross-builds are also possible and explicitly marked.
 - Linux: C compiler, pkg-config, X11/Wayland/OpenGL development support; on Ubuntu install `build-essential pkg-config libx11-dev libxi-dev libxcursor-dev libxrandr-dev libxinerama-dev libxkbcommon-dev libwayland-dev libegl1-mesa-dev`.
 
-The new portable Windows CPU build requires Windows 10/11 x64 and the built-in system UCRT/GDI; no working OpenGL driver or external MinGW DLLs are required. The older original/diag1 downloads still use OpenGL. Linux portable builds require glibc **2.28+**, an X11/Wayland desktop and OpenGL; exporting files requires a working desktop portal. These packages are compiled but have not yet been exercised on Windows/Linux devices.
+The portable Windows CPU build requires Windows 10/11 x64 and built-in system UCRT/GDI; no OpenGL driver or external MinGW DLLs are required. User-confirmed running on physical Windows 11; Windows 10 remains unverified. Older original/diag1 downloads still use OpenGL. Linux requires glibc **2.28+**, an X11/Wayland desktop and OpenGL; file exports require a working desktop portal. Linux real-device testing remains pending.
 
-新版 Windows CPU 便携包只使用 Windows 10／11 x64 自带的 UCRT／GDI，不需要可用 OpenGL 驱动或额外 MinGW DLL。旧原版／diag1 仍依赖 OpenGL。Linux 便携包需要 glibc **2.28+**、X11／Wayland 桌面和 OpenGL；文件导出依赖桌面 portal。Windows／Linux 尚待实机验证。
+新版 Windows CPU 便携包只使用 Windows 10／11 x64 自带的 UCRT／GDI，不需要 OpenGL 驱动或额外 MinGW DLL。Windows 11 实机已由用户确认可运行，Windows 10 尚待验证。旧原版／diag1 仍依赖 OpenGL。Linux 需要 glibc **2.28+**、X11／Wayland 桌面、OpenGL，文件导出依赖桌面 portal；Linux 尚待实机验证。
 
 Run `python3 scripts/package.py --target <triple>` after a release build. It makes portable packages, includes licenses and checksums, and never publishes anything. macOS archives are ad-hoc signed, **not Apple Developer signed/notarized**; Windows binaries are **unsigned**. Do not disable security protections globally to run test builds.
 
