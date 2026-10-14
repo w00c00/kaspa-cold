@@ -1,0 +1,8 @@
+/target/
+/dist/
+.DS_Store
+._*
+/assets/icon-concept-v1.png
+/assets/icon-concept-v2.png
+/assets/icon-design.md
+/assets/icon-design-v2.md

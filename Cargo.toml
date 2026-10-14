@@ -1,0 +1,25 @@
+[package]
+name = "kaspa-cold"
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+description = "Offline Kaspa mnemonic and address generator"
+
+[dependencies]
+eframe = { version = "=0.33.3", default-features = false, features = ["glow", "default_fonts", "x11", "wayland"] }
+kaspa-wallet-keys = "=2.1.0"
+kaspa-bip32 = "=2.1.0"
+kaspa-addresses = "=2.1.0"
+getrandom = "=0.3.4"
+zeroize = "=1.8.2"
+qrcode = { version = "=0.14.1", default-features = false }
+png = "=0.17.16"
+rfd = { version = "=0.16.0", default-features = false, features = ["xdg-portal", "async-std"] }
+sys-locale = "=0.3.2"
+
+[profile.release]
+opt-level = "s"
+lto = true
+codegen-units = 1
+strip = true
+
