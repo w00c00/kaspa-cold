@@ -80,4 +80,6 @@ This is a testing delivery, not a claim of audited or mainnet-ready custody secu
 
 ## Publication / 发布
 
+Release cleanup: at the user's request, retain only Windows x64 CPU/GDI, macOS Apple Silicon and Linux x64 packages, each with SHA256. Remove superseded Windows original/diag1 and Intel Mac archives/checksums. Retained files and the version tag are unchanged. The statement below records the earlier publication step before this cleanup. / 按用户要求，只保留 Windows x64 CPU 版、Mac Apple Silicon、Linux x64 及校验文件；移除旧 Windows 原版／诊断包及 Intel Mac 包。保留文件和标签不变。下方记录清理之前的发布步骤。
+
 The user approved the v0.1.0 GitHub release after Windows 11 runtime confirmation. Existing binary assets, checksums and tag are preserved; their bundled validation files describe the earlier build-time status. This repository record and release notes contain the subsequent runtime confirmation. Formal publication is not an independent security audit. / 用户确认 Windows 11 可运行后授权正式发布。现有二进制、校验值和标签保留，包内验证说明仍记录构建时状态；后续实机确认以本记录和 Release 说明为准。正式发布不等于完成独立安全审计。

@@ -1,76 +1,38 @@
-# Kaspa Cold v0.1.0 — Offline generator / 离线钱包生成器
+# Kaspa Cold v0.1.0 — Offline Wallet Generator / 离线钱包生成器
 
-## v0.1.0 release / v0.1.0 正式发布
+## Downloads / 下载
 
-The user confirmed the CPU build runs on physical Windows 11 on 2026-10-14 and approved publication. The reported unsupported-OpenGL startup failure is resolved on that machine. Download **windows-portable-cpu1** for Windows; older OpenGL builds are retained for provenance. Existing tag, archives and SHA256 values are unchanged; bundled validation documents record the earlier build-time status. This release is not independently security-audited; verify recovery and use only small test amounts first.
+Only three common platform packages are published, each with a matching `.sha256`. Windows defaults to the lightweight CPU/GDI build. Superseded Windows OpenGL/diagnostic packages and the Intel Mac archive were removed; the tag and retained binaries/checksums are unchanged.
 
-用户于 2026-10-14 确认 CPU 版在 Windows 11 实体机可运行，授权正式发布。该机器上的 OpenGL 启动故障已解决。Windows 优先下载 **windows-portable-cpu1**；旧 OpenGL 包保留，标签、文件和校验值不变。包内文档记录的是构建时状态，后续实机确认见本说明。未完成独立安全审计，请先验证恢复，再小额测试。
+只发布三个常用平台包，各附 `.sha256` 校验文件。Windows 默认轻量 CPU／GDI 版。旧 Windows OpenGL 版、诊断版和 Intel Mac 包已移除；标签及保留的二进制、校验值不变。
 
-## Windows portable CPU compatibility build / Windows 精简 CPU 兼容版
-
-The recommended asset contains `windows-portable-cpu1`. It uses CPU software rendering + Windows system GDI, with no OpenGL driver requirement, Electron, WebView, Node.js or extra MinGW runtime DLL. Extract and run the EXE. Offline generation/recovery, bilingual UI, QR and backup flow remain unchanged. 18 automated tests passed, including CPU rendering in both languages/all pages and focus/clipboard protection. **User-confirmed running on physical Windows 11; full operation-by-operation validation remains pending.** Original v0.1.0 tag/assets remain unchanged; source commit recorded in `BUILD_COMMIT.txt`.
-
-请优先下载 `windows-portable-cpu1` 包。CPU 绘制、系统 GDI 显示，解压即用，不需要额外图形运行库。完全离线、双语、备份和地址规则不变。18 项自动测试通过，**用户已确认 Windows 11 实机可运行，逐项功能验证仍待完成**，原版标签与文件保留不覆盖。
-
-CPU package / CPU 包：EXE **4.74 MiB**, ZIP approximately **4.61 MiB** including target-specific licenses and bilingual documentation. No executable packing / 不加壳。
-
-## Historical Windows diagnostic / 旧 Windows 诊断包
-
-If the original Windows EXE silently exits, download the extra asset whose name contains `windows-startup-diag1`. It adds native startup error dialogs and `--diagnostic-self-test` (no wallet generated). It writes no logs and transmits no diagnostics. App error/panic payloads and post-initialization details are withheld. **This is a diagnostic build, not a confirmed fix**, and still needs Windows real-device testing. Its source commit is recorded inside `BUILD_COMMIT.txt`; the original v0.1.0 tag and downloads remain unchanged.
-
-如果原版 Windows EXE 双击无反应，请下载名称含 `windows-startup-diag1` 的额外诊断包。启动失败会尝试显示原生错误弹窗；`--diagnostic-self-test` 可主动测试弹窗，不生成钱包。不记录日志、不上传诊断数据，不显示应用异常／panic 载荷及初始化后的详情。**这是诊断版，不代表已修复故障**；仍待 Windows 实机验证。源码提交记录在包内 `BUILD_COMMIT.txt`，原版标签和下载保留不变。
-
-## Original build notes (historical) / 原版构建说明（历史记录）
-
-The following describes the original pre-release builds, not the subsequently verified Windows CPU build. / 以下记录原始预发布包，不代表后续实机确认的 Windows CPU 版状态。
-
-## English
-
-A small native Kaspa mnemonic and receiving-address generator built with Rust and egui. No Electron, WebView or Node.js runtime. This is a **pre-release test build**.
-
-- Fully local generation and recovery verification: no node, website, balance API, telemetry or auto-update calls.
-- Standard English BIP39: 12 or 24 words, 24 by default. OS cryptographic randomness; failures stop generation.
-- Mainnet by default, with a TN10 address-format switch. Standard account 0 receiving path `m/44'/111111'/0'/0/i`.
-- Handwritten backup confirmation before showing a newly generated wallet's address. After confirmation, only public derivation state is retained.
-- Public address copying, receiving QR PNG export and public recovery-info TXT export. No mnemonic/private-key export or wallet persistence.
-- Chinese and English UI; system-language detection and manual switching.
-- Kaspa-inspired K-key icon in the window/header, macOS bundle and Windows executable; Linux icon and optional desktop launcher included.
-
-### Downloads
-
-| Package | Platform | Archive size |
+| Platform / 平台 | Package / 文件 | Size / 体积 |
 |---|---|---|
-| `aarch64-apple-darwin.zip` | macOS Apple Silicon | 6.20 MiB |
-| `x86_64-apple-darwin.zip` | macOS Intel | 6.31 MiB |
-| `x86_64-pc-windows-gnu.zip` | Windows 10/11 x64 | 5.31 MiB |
-| `x86_64-unknown-linux-gnu.tar.gz` | Linux x64, glibc 2.28+ | 5.02 MiB |
+| Windows x64 — minimal dependencies / 最少依赖 | `Kaspa-Cold-0.1.0-windows-portable-cpu1-x86_64-pc-windows-gnu.zip` | 4.61 MiB |
+| macOS Apple Silicon — M series / M 系列 | `Kaspa-Cold-0.1.0-aarch64-apple-darwin.zip` | 6.20 MiB |
+| Linux x64 | `Kaspa-Cold-0.1.0-x86_64-unknown-linux-gnu.tar.gz` | 5.02 MiB |
 
-Verify the matching `.sha256` before running. macOS builds are ad-hoc signed, not Developer signed/notarized; Windows builds are unsigned. Windows needs a functioning OpenGL driver; Linux needs an X11/Wayland desktop, OpenGL and a desktop portal for file export. No external MinGW runtime DLLs are imported by the Windows package.
+Windows: extract and run `kaspa-cold.exe`. CPU rendering + built-in GDI; no OpenGL driver, Electron, WebView, Node.js or extra MinGW DLLs. EXE **4.74 MiB**, no UPX/packing. / Windows 解压双击即可运行，CPU 绘制、系统 GDI 显示，不需要额外图形运行库，不加壳。
 
-### Verification and limitations
+macOS is ad-hoc signed, not Developer signed/notarized; Windows is unsigned. Linux requires glibc 2.28+, X11/Wayland, OpenGL and a desktop portal for file export. Verify SHA256; do not globally disable system security. / Mac 无开发者签名或公证，Windows 无发行者签名。Linux 需要上述桌面依赖。运行前核对 SHA256，不要全局关闭安全保护。
 
-13 automated tests passed, including an official Kaspa known-address vector, BIP39, failure paths, backup checks, network-format changes, public export checks and icon decoding. Mac Apple Silicon received native UI smoke checks before the icon integration; the final icon resources were verified in the bundle and executable. Intel core tests passed under translation, not physical Intel hardware. **Windows/Linux are compiled, not real-device verified.**
+## Features / 功能
 
-No BIP39 passphrase, legacy-wallet derivation, balance lookup, transaction construction or signing. The app does not turn off the computer's network. Use a clean, permanently offline device; protect handwritten backups. It cannot prevent malware, screenshots, swap or OS crash dumps, and complete memory erasure is not guaranteed. See `VALIDATION.md` for dependency warnings and remaining tests.
+- Fully local generation/recovery verification; no node, website, telemetry or auto-update. / 完全离线生成助记词和验证恢复，无节点、网站、遥测或自动更新。
+- English BIP39, 12/24 words, default 24; OS cryptographic randomness, fail closed. / 英文 BIP39，12／24 词，默认 24 词，系统安全随机源失败即停止。
+- Mainnet default, TN10 address-format switch; account 0, path `m/44'/111111'/0'/0/i`. / 默认主网，可切换 TN10 地址格式，标准账户 0。
+- Handwritten backup and three-word confirmation; retain only public derivation state afterwards. / 手写备份、核对三个指定单词，之后只保留公开派生状态。
+- Copy public address; export QR PNG and public recovery TXT. No secret export or wallet persistence. / 复制公开地址、导出二维码及公开恢复说明，不导出秘密、不保存钱包。
+- Chinese/English, system-language detection, manual switching and Kaspa K-key icon. / 中英双语、系统语言识别、手动切换及 Kaspa 风格 K 钥匙图标。
 
-**Not independently audited. Verify recovery and use small tests first; do not use this test build for significant funds.** Never fund the publicly known mnemonics used by source tests.
+## Verification and safety / 验证与安全
 
-## 中文
+18 automated tests and host/Windows-target Clippy passed. The user confirmed running on physical Windows 11 on 2026-10-14, resolving the reported OpenGL startup failure on that machine. Mac Apple Silicon native UI smoke checks passed. Linux, Windows 10 and detailed operation-by-operation Windows validation remain pending. Bundled validation files record build-time status; subsequent confirmation is recorded here and in the repository.
 
-Kaspa Cold 是一个 Rust＋egui 原生离线工具，不捆绑 Electron、WebView 或 Node.js。本次为 **v0.1.0 预发布测试版**。
+18 项自动测试及主机／Windows 目标 Clippy 通过。用户于 2026-10-14 确认 Windows 11 实体机可运行，该机器的 OpenGL 启动故障已解决。Mac Apple Silicon 已做原生界面检查。Linux、Windows 10 及 Windows 逐项验证仍待完成。包内文件记录构建时状态，后续确认以仓库和本说明为准。
 
-- 完全本地生成助记词和验证恢复，不连接节点、网站或余额 API，没有遥测、自动更新。
-- 12／24 个英文 BIP39 助记词，默认 24 个；使用系统安全随机源，失败即停止。
-- 默认主网，可切换 TN10 地址格式；固定标准账户 0，收款路径为 `m/44'/111111'/0'/0/i`。
-- 创建后先手写备份、核对三个指定单词，再显示地址；确认后只保留公开派生状态。
-- 复制公开地址，导出地址二维码 PNG、公开恢复说明 TXT；不导出助记词和私钥，不保存钱包。
-- 中英双语，自动识别系统语言，支持手动切换。
-- 集成 Kaspa 风格 K 钥匙图标；Mac 应用、Windows EXE 和 Linux 图标资源均已更新。
+No BIP39 passphrase, legacy derivation, balance lookup, transfer or signing. The app does not disconnect the device's network. Use a clean, permanently offline device and handwritten backups. Malware, screenshots, swap and crash dumps remain risks; complete memory erasure is not guaranteed.
 
-四个平台包及 SHA256 校验文件见下方 Release Assets，体积约 5–6.3 MiB。Mac 仅 ad-hoc 签名，没有 Apple 开发者签名／公证；Windows 没有发行者签名。不要全局关闭系统安全保护。
+不支持附加口令、旧版派生、查询余额、转账或签名。程序不会替你关闭网络，请使用干净、长期离线设备并手写备份。不能保证防恶意软件、截屏、交换内存或崩溃转储。
 
-13 项自动化测试通过。Mac 已做原生界面检查，最终图标资源已核对；Intel 核心测试通过转译运行。**Windows／Linux 尚待实机验证，编译成功不等于运行验证通过。**
-
-当前不支持附加口令、旧版钱包派生、查询余额、转账或离线签名。软件不会替你关闭电脑网络，应在干净、长期离线的设备上使用。手写保管助记词，不要截图、上传云盘、发送聊天或联网打印。依赖警告和未完成检查见 `VALIDATION.md`。
-
-**软件未经独立安全审计。请先验证恢复并做小额测试，不要直接存入大额资金。公开测试助记词绝不能用于实际资金。**
+**Not independently audited. Verify recovery and use small tests first; never fund public test mnemonics.** / **未经独立安全审计，请先验证恢复、再小额测试，公开测试助记词绝不能用于实际资金。** Dependency audit has 10 informational warnings; see `VALIDATION.md`. / 依赖审计仍有 10 项信息性警告，见验证记录。

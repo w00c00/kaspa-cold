@@ -2,13 +2,15 @@
 
 The user's diagnostic screenshot identified `COLD-GL-PAINTER`: the physical Windows 11 machine did not expose OpenGL 2.0+. The new `windows-portable-cpu1` package uses CPU rasterization and the system GDI (`CreateDIBSection`/`BitBlt` via softbuffer), not OpenGL. No third-party graphics DLL or installer is bundled or required. Only the EXE is needed to run; keep documentation/licenses when redistributing. / 用户实机截图确认是 OpenGL 2.0+ 不受支持。新版改为 CPU 绘制，使用系统自带 GDI，无需安装第三方图形 DLL。运行只需要 EXE；再分发时应保留说明和许可证。
 
-Download `Kaspa-Cold-0.1.0-windows-portable-cpu1-x86_64-pc-windows-gnu.zip` and its SHA256, extract, double-click `kaspa-cold.exe`. The header says `CPU · OFFLINE`. Original and diag1 assets are preserved and still use OpenGL. / 下载新版及校验文件，解压后双击 EXE，标题显示 `CPU · OFFLINE`。旧文件保留，仍使用 OpenGL。
+Download `Kaspa-Cold-0.1.0-windows-portable-cpu1-x86_64-pc-windows-gnu.zip` and its SHA256, extract, double-click `kaspa-cold.exe`. The header says `CPU · OFFLINE`. This is the only Windows release package; superseded OpenGL and diagnostic downloads were removed. / 下载新版及校验文件，解压后双击 EXE，标题显示 `CPU · OFFLINE`。这是唯一 Windows 发布包，旧 OpenGL 和诊断包已移除。
 
 No networking, storage, signing or telemetry is added. Rasterized tile caching is disabled; clearing/closing remains best-effort secret cleanup, not protection from screenshots, swap or malware. Cross-build and headless CPU render tests passed. The user confirmed running on physical Windows 11 on 2026-10-14; detailed clipboard/export/focus checks remain pending. / 不新增联网、存储、签名或遥测。禁用像素块缓存，秘密清理仍仅是尽力而为，不能防截屏、交换内存或恶意软件。用户于 2026-10-14 确认 Windows 11 实体机可运行，复制、导出和失焦的逐项验证仍待完成。
 
 `COLD-SOFTWARE-WINDOW` means a CPU surface/window/event-loop startup failure. The native dialog self-test remains `kaspa-cold.exe --diagnostic-self-test` and generates no wallet. / 此代码表示软件绘制窗口或事件循环启动失败；弹窗自测不生成钱包。
 
-## Historical startup diagnostic 1 / 旧诊断版 1
+## Historical startup diagnostic 1 (download removed) / 旧诊断版 1（已移除下载）
+
+The following is historical troubleshooting evidence only. Do not look for the obsolete diag1 download; use the CPU build above. / 以下仅保留历史排查记录，不再下载旧诊断包，请使用上面的 CPU 版。
 
 This is an additional diagnostic build, not a claim that the Windows startup problem is fixed. The original v0.1.0 downloads remain unchanged. / 这是额外提供的诊断版，不代表已经修复 Windows 启动故障；原版下载保留不变。
 
